@@ -12,7 +12,6 @@ export const UserContext = createContext({
 });
 
 // the actual component
-
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   // The provider is allowing all its children components to access the values inside its useState
