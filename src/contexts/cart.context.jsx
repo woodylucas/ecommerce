@@ -8,10 +8,11 @@ import {
 
 export const CartContext = createContext({
   isCartOpen: false,
-  setIsToggle: () => {},
   cartItems: [],
-  addItemsToCart: () => {},
   cartCount: 0,
+  setIsToggle: () => {},
+  addItemsToCart: () => {},
+  removeItemFromCart: () => {},
 });
 
 const addCartItem = (cartItems, productToAdd) => {
@@ -29,6 +30,16 @@ const addCartItem = (cartItems, productToAdd) => {
   }
   // return new array w/ modified cart Item
   return [...cartItems, { ...productToAdd, quantity: 1 }];
+};
+
+const removeCartItem = (cartItems, itemToRemove) => {
+  return cartItems
+    .map((cartItem) =>
+      cartItem.id === itemToRemove.id
+        ? { ...cartItem, quantity: cartItem.quantity - 1 }
+        : cartItem
+    )
+    .filter((item) => item.quantity > 0);
 };
 
 export const CartProvider = ({ children }) => {
@@ -49,7 +60,13 @@ export const CartProvider = ({ children }) => {
   }, [getCartCount]);
 
   const addItemsToCart = useCallback((productToAdd) => {
-    setCartItems((prevCartItem) => addCartItem(prevCartItem, productToAdd));
+    setCartItems((prevCartItems) => addCartItem(prevCartItems, productToAdd));
+  }, []);
+
+  const removeItemFromCart = useCallback((productToRemove) => {
+    setCartItems((prevCartItems) =>
+      removeCartItem(prevCartItems, productToRemove)
+    );
   }, []);
 
   const value = useMemo(() => {
@@ -57,10 +74,11 @@ export const CartProvider = ({ children }) => {
       isCartOpen,
       setIsCartOpen,
       addItemsToCart,
+      removeItemFromCart,
       cartItems,
       cartCount,
     };
-  }, [isCartOpen, addItemsToCart, cartItems, cartCount]);
+  }, [isCartOpen, addItemsToCart, removeItemFromCart, cartItems, cartCount]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
