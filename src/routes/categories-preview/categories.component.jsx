@@ -5,7 +5,6 @@ import { CategoriesContext } from "../../contexts/categories.context";
 
 const CategoriesPreview = () => {
   const { categoriesMap } = useContext(CategoriesContext);
-  console.log(Object.keys(categoriesMap));
 
   return (
     <Fragment>
