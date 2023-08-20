@@ -1,10 +1,6 @@
-import {
-  createContext,
-  useState,
-  useMemo,
-  useEffect,
-  useCallback,
-} from "react";
+import { createContext, useMemo, useCallback, useReducer } from "react";
+
+import { createAction } from "../utils/reducer/reducer.utils";
 
 export const CartContext = createContext({
   isCartOpen: false,
@@ -16,6 +12,38 @@ export const CartContext = createContext({
   removeItemFromCart: () => {},
   cleartItemFromCart: () => {},
 });
+
+const CART_ACTION_TYPES = {
+  SET_CART_ITEMS: "SET_CART_ITEMS",
+  SET_IS_CART_OPEN: "SET_IS_CART_OPEN",
+};
+
+const INITAL_STATE = {
+  isCartOpen: false,
+  cartItems: [],
+  cartCount: 0,
+  cartTotal: 0,
+};
+
+const cartReducer = (state, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case CART_ACTION_TYPES.SET_CART_ITEMS:
+      return {
+        ...state,
+        ...payload,
+      };
+    case CART_ACTION_TYPES.SET_IS_CART_OPEN:
+      return {
+        ...state,
+        isCartOpen: payload,
+      };
+
+    default:
+      throw new Error(`Unhandled type ${type} in cartReducer`);
+  }
+};
 
 const addCartItem = (cartItems, productToAdd) => {
   // find if cart Items contains product to add.
@@ -49,50 +77,59 @@ const clearCartItem = (cartItems, productToClear) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
-  const [cartTotal, setCartTotal] = useState(0);
+  const [{ cartItems, isCartOpen, cartCount, cartTotal }, dispatch] =
+    useReducer(cartReducer, INITAL_STATE);
 
-  const getCartCount = useCallback(() => {
-    const newCartCount = cartItems.reduce(
-      (total, cartItem) => total + cartItem.quantity,
-      0
-    );
-    setCartCount(newCartCount);
-  }, [cartItems]);
+  const updateCartItemsReducer = useCallback(
+    (newCartItems) => {
+      const newCartCount = cartItems.reduce(
+        (total, cartItem) => total + cartItem.quantity,
+        0
+      );
 
-  const getCartTotal = useCallback(() => {
-    const newCartTotal = cartItems.reduce(
-      (total, cartItem) => total + cartItem.quantity * cartItem.price,
-      0
-    );
-    setCartTotal(newCartTotal);
-  }, [cartItems]);
+      const newCartTotal = cartItems.reduce(
+        (total, cartItem) => total + cartItem.quantity * cartItem.price,
+        0
+      );
 
-  useEffect(() => {
-    getCartCount();
-  }, [getCartCount]);
+      dispatch(
+        createAction(CART_ACTION_TYPES.SET_CART_ITEMS, {
+          cartItems: newCartItems,
+          cartTotal: newCartTotal,
+          cartCount: newCartCount,
+        })
+      );
+    },
+    [cartItems]
+  );
 
-  useEffect(() => {
-    getCartTotal();
-  }, [getCartTotal]);
+  const addItemsToCart = useCallback(
+    (productToAdd) => {
+      const newCartItems = addCartItem(cartItems, productToAdd);
+      updateCartItemsReducer(newCartItems);
+    },
+    [cartItems, updateCartItemsReducer]
+  );
 
-  const addItemsToCart = useCallback((productToAdd) => {
-    setCartItems((prevCartItems) => addCartItem(prevCartItems, productToAdd));
-  }, []);
+  const removeItemFromCart = useCallback(
+    (productToRemove) => {
+      const newCartItems = removeCartItem(cartItems, productToRemove);
+      updateCartItemsReducer(newCartItems);
+    },
+    [cartItems, updateCartItemsReducer]
+  );
 
-  const removeItemFromCart = useCallback((productToRemove) => {
-    setCartItems((prevCartItems) =>
-      removeCartItem(prevCartItems, productToRemove)
-    );
-  }, []);
+  const cleartItemFromCart = useCallback(
+    (productToClear) => {
+      const newCartItems = clearCartItem(cartItems, productToClear);
+      updateCartItemsReducer(newCartItems);
+    },
+    [cartItems, updateCartItemsReducer]
+  );
 
-  const cleartItemFromCart = useCallback((productToClear) => {
-    setCartItems((prevCartItems) =>
-      clearCartItem(prevCartItems, productToClear)
-    );
-  }, []);
+  const setIsCartOpen = (bool) => {
+    dispatch({ type: CART_ACTION_TYPES.SET_IS_CART_OPEN, payload: bool });
+  };
 
   const value = useMemo(() => {
     return {
