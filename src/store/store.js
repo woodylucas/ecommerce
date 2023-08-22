@@ -9,7 +9,7 @@ import { rootReducer } from "./root-reducer";
 const persistConfig = {
   key: "root", // I want you to persist over the whole thing
   storage, // Choose a storage system (e.g., localStorage, AsyncStorage) Use the imported storage module
-  blacklist: ["user"],
+  whitelist: ["cart"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
