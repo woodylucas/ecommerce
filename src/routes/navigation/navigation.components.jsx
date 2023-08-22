@@ -1,11 +1,11 @@
+import { Fragment } from "react";
 import { useSelector } from "react-redux";
-import { Fragment, useContext } from "react";
 import { Outlet } from "react-router-dom";
 
 import CartIcon from "../../components/cart-icon/cart-icon.component";
 import CartDropdown from "../../components/cart-dropdown/cart-dropdown";
 
-import { CartContext } from "../../contexts/cart.context";
+import { selectToggleCart } from "../../store/cart/cart.selector";
 import { selectCurrentUser } from "../../store/user/user.selector";
 
 import { ReactComponent as CrwnLogo } from "../../assets/crown.svg";
@@ -20,7 +20,7 @@ import {
 
 const Navigation = () => {
   const currentUser = useSelector(selectCurrentUser);
-  const { isCartOpen } = useContext(CartContext);
+  const toggleCart = useSelector(selectToggleCart);
 
   return (
     <Fragment>
@@ -39,7 +39,7 @@ const Navigation = () => {
           )}
           <CartIcon />
         </NavLinks>
-        {isCartOpen && <CartDropdown />}
+        {toggleCart && <CartDropdown />}
       </NavigationContainer>
       <Outlet />
     </Fragment>
