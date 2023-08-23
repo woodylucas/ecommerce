@@ -40,13 +40,8 @@ const categories = [
 const Directory = () => {
   return (
     <DirectoryContainer>
-      {categories.map(({ id, title, imageUrl, route }) => (
-        <DirectoryItem
-          key={id}
-          title={title}
-          imageUrl={imageUrl}
-          route={route}
-        />
+      {categories.map((category) => (
+        <DirectoryItem key={category.id} category={category} />
       ))}
     </DirectoryContainer>
   );
