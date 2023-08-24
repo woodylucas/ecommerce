@@ -1,31 +1,30 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import FormInput from "../form-input/form-input.component";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button.component";
 
 import {
-  signInWithGooglePopup,
-  signInAuthUserWithEmailAndPassword,
-} from "../../utils/firebase/firebase.utils";
+  googleSignInStart,
+  emailSignInStart,
+} from "../../store/user/user.action";
 
 import { SignInContainer, ButtonsContainer } from "./sign-in-form.styles";
 
 const SignInFrom = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const signInWithGoogle = async () => {
-    await signInWithGooglePopup();
+    dispatch(googleSignInStart());
   };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
     try {
-      const { user } = await signInAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
+      const { user } = dispatch(emailSignInStart(email, password));
       setEmail("");
       setPassword("");
     } catch (error) {
