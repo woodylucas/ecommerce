@@ -4,8 +4,10 @@ import { useDispatch } from "react-redux";
 import FormInput from "../form-input/form-input.component";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button.component";
 
-import { signInAuthUserWithEmailAndPassword } from "../../utils/firebase/firebase.utils";
-import { googleSignInStart } from "../../store/user/user.action";
+import {
+  googleSignInStart,
+  emailSignInStart,
+} from "../../store/user/user.action";
 
 import { SignInContainer, ButtonsContainer } from "./sign-in-form.styles";
 
@@ -22,10 +24,7 @@ const SignInFrom = () => {
     evt.preventDefault();
 
     try {
-      const { user } = await signInAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
+      const { user } = dispatch(emailSignInStart(email, password));
       setEmail("");
       setPassword("");
     } catch (error) {
