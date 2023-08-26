@@ -21,4 +21,5 @@ export const ItemCount = styled.div`
   font-size: 10px;
   font-weight: bold;
   bottom: 12px;
+  cursor: pointer;
 `;
