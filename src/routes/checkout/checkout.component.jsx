@@ -1,7 +1,15 @@
 import { useSelector } from "react-redux";
 
-import "./checkout.styles.scss";
+import {
+  CheckoutContainer,
+  CheckoutHeader,
+  HeaderBlock,
+  Total,
+} from "./checkout.styles";
+
 import CheckoutItem from "../../components/checkout-item/checkout-item.component";
+import PaymentForm from "../../components/payment-from/payment-form.component";
+
 import {
   selectCartItems,
   selectCartTotal,
@@ -12,29 +20,31 @@ const Checkout = () => {
   const cartTotal = useSelector(selectCartTotal);
 
   return (
-    <div className="checkout-container">
-      <div className="checkout-header">
-        <div className="header-block">
+    <CheckoutContainer>
+      <CheckoutHeader>
+        <HeaderBlock>
           <span>Product</span>
-        </div>
-        <div className="header-block">
+        </HeaderBlock>
+        <HeaderBlock>
           <span>Description</span>
-        </div>
-        <div className="header-block">
-          <span>Quanitity</span>
-        </div>
-        <div className="header-block">
+        </HeaderBlock>
+        <HeaderBlock>
+          <span>Quantity</span>
+        </HeaderBlock>
+        <HeaderBlock>
           <span>Price</span>
-        </div>
-        <div className="header-block">
+        </HeaderBlock>
+        <HeaderBlock>
           <span>Remove</span>
-        </div>
-      </div>
-      {cartItems.map((cartItem) => {
-        return <CheckoutItem key={cartItem.id} cartItem={cartItem} />;
-      })}
-      <span className="total">Total: ${cartTotal}</span>
-    </div>
+        </HeaderBlock>
+      </CheckoutHeader>
+      {cartItems.map((cartItem) => (
+        <CheckoutItem key={cartItem.id} cartItem={cartItem} />
+      ))}
+      <Total>Total: ${cartTotal}</Total>
+
+      <PaymentForm />
+    </CheckoutContainer>
   );
 };
 
